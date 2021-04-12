@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Golang Design Patterns · MEX7</title><meta name="description" content="Golang Design Patterns - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">Golang Design Patterns</h1><div class="post-info">Mar 19, 2021</div><div class="post-content"><p><a href="https://github.com/senghoo/golang-design-pattern" target="_blank" rel="noopener">https://github.com/senghoo/golang-design-pattern</a></p>
+<p>golang 设计模式</p>
+<h2 id="创建型模式"><a href="#创建型模式" class="headerlink" title="创建型模式"></a>创建型模式</h2><h3 id="简单工厂模式"><a href="#简单工厂模式" class="headerlink" title="简单工厂模式"></a>简单工厂模式</h3><ol>
+<li>定义 interface 提供 New 方法</li>
+<li>多个 struct 实现上一步 interface 内部方法</li>
+<li>这些 struct 都是这个 interface 的工厂实现</li>
+<li>通过 New 的不同传入参数来决定返回的具体 struct</li>
+</ol>
+<h3 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h3><p>多个不同的对象具有相同的底层函数逻辑</p>
+<ol>
+<li>实际实现 interface</li>
+<li>工厂 interface</li>
+<li>基础的操作 struct</li>
+<li>A B struct 具有相同的底层函数，只有操作结果不同</li>
+</ol>
+<h3 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h3><p>流程控制，将所有的过程都进行了抽象</p>
+<ol>
+<li>功能x和功能y interface</li>
+<li>工厂 interface 包含以上功能x/y interface 的实现</li>
+<li>A工厂分别构造功能x/y的 struct</li>
+<li>A工厂构造工厂 interface 的实现</li>
+</ol>
+<h3 id="创建者模式"><a href="#创建者模式" class="headerlink" title="创建者模式"></a>创建者模式</h3><ol>
+<li>build interface</li>
+<li>Director new build interface</li>
+<li>Construct 方法</li>
+<li>builder1 和 builder2 实现 build interface</li>
+</ol>
+<h3 id="原型模式"><a href="#原型模式" class="headerlink" title="原型模式"></a>原型模式</h3><p>对象可对自身进行复制</p>
+<h3 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h3><p>once.Do()</p>
+<h2 id="结构型模式"><a href="#结构型模式" class="headerlink" title="结构型模式"></a>结构型模式</h2><h3 id="外观模式"><a href="#外观模式" class="headerlink" title="外观模式"></a>外观模式</h3><p>目前常用的模式，对象内部进行了多个interface的实现，并对某些函数功能进行组装</p>
+<h3 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h3><p>将对象内部方法进行封装调用，感觉在鉴权方面可能有使用空间</p>
+<h3 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h3><p>实际开发中也很常用</p>
+<h3 id="组合模式"><a href="#组合模式" class="headerlink" title="组合模式"></a>组合模式</h3><p>根据一定规律对数据进行组装，目标为可递归对象</p>
+<h3 id="享元模式"><a href="#享元模式" class="headerlink" title="享元模式"></a>享元模式</h3><p>一般情况下，我们可能直接在GET中获取到了需要的对象数据，而不考虑进一步的 factory 封装</p>
+<h3 id="装饰模式"><a href="#装饰模式" class="headerlink" title="装饰模式"></a>装饰模式</h3><p>对一个内容进行重复处理，例如对图片数据进行鉴黄、涉政、广告等检测</p>
+<ol>
+<li>目标 interface</li>
+<li>多个 decorator struct 都包含目标 interface，并对其进行实现</li>
+<li>多个实现之间进行调用，传递相同的 interface struct</li>
+</ol>
+<h3 id="桥模式"><a href="#桥模式" class="headerlink" title="桥模式"></a>桥模式</h3><ol>
+<li>抽象消息发送对象</li>
+<li>抽象执行发送对象</li>
+<li>将不同的执行者添加为不同发送者的内部对象</li>
+<li>执行统一的发送函数，实现不同的效果</li>
+</ol>
+<h2 id="行为模式"><a href="#行为模式" class="headerlink" title="行为模式"></a>行为模式</h2><h3 id="中介者模式"><a href="#中介者模式" class="headerlink" title="中介者模式"></a>中介者模式</h3><p>适用于内部多种不同对象的功能封装</p>
+<h3 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h3><ol>
+<li>Observer interface，实现 struct， 提供 update 方法</li>
+<li>subject 增加 observer 注册，提供调用方法调用 update</li>
+</ol>
+<h3 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h3><ol>
+<li>对象 a 中可能存在2中操作，分别对这两个操作构建命令的 interface</li>
+<li>将对象 a 传入命令的 struct 中</li>
+<li>再将这两个命令的 struct 传入对象 b 中，那么对象 b 就可以操作对象 a 的操作组合</li>
+</ol>
+<h3 id="迭代器模式"><a href="#迭代器模式" class="headerlink" title="迭代器模式"></a>迭代器模式</h3><ol>
+<li>Aggregate interface 里面包含 Iterator</li>
+<li>Iterator 包含 First IsDone Next 三个方法</li>
+<li>使用方法传入 Iterator 进行迭代</li>
+</ol>
+<h3 id="模板方法模式"><a href="#模板方法模式" class="headerlink" title="模板方法模式"></a>模板方法模式</h3><p>匿名组合模式实现继承。</p>
+<p>父类需要调用子类方法，所以子类需要匿名组合父类的时候也需要持有子类的应用</p>
+<ol>
+<li>定义了模板操作</li>
+<li>不同的方式实现模板的内部操作</li>
+<li>保证对外暴露的调用方式唯一</li>
+<li>适用于内部操作比较多的组合场景</li>
+</ol>
+<h3 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h3><ol>
+<li>对象 a 内部有多重变量</li>
+<li>传入对 a 变量操作的不同策略</li>
+</ol>
+<p>适用于不同策略的初始化场景，这个和享元模式组合应该不错</p>
+<h3 id="状态模式"><a href="#状态模式" class="headerlink" title="状态模式"></a>状态模式</h3><p>适用于状态传递，对同一个 interface 的多个 struct，进行互相间的状态传递，与装饰模式的区别是一个在内部定义固有规则传递，一个是在外部人为控制传递。</p>
+<ol>
+<li>Week interface，包含 Today 和 Next，Next 里面传递了下一个次序的 struct DayContext</li>
+<li>实现多个不同的 DayContext， 定义各自的 Next 就可以持续传递</li>
+</ol>
+<h3 id="备忘录模式"><a href="#备忘录模式" class="headerlink" title="备忘录模式"></a>备忘录模式</h3><p>暴露一个内部数据状态的方法</p>
+<h3 id="解释器模式"><a href="#解释器模式" class="headerlink" title="解释器模式"></a>解释器模式</h3><ol>
+<li>对原始数据进行规则解析，解析为统一的对象</li>
+<li>调用 interpret 方法进行计算，node 的 left 和 right 使用很巧妙</li>
+</ol>
+<h3 id="责任链模式"><a href="#责任链模式" class="headerlink" title="责任链模式"></a>责任链模式</h3><p>递归传递判断</p>
+<h3 id="访问者模式"><a href="#访问者模式" class="headerlink" title="访问者模式"></a>访问者模式</h3><p>struct 互相传递进行访问，有点像复杂版的策略模式</p>
+<h2 id="高性能的-I-O-设计"><a href="#高性能的-I-O-设计" class="headerlink" title="高性能的 I/O 设计"></a>高性能的 I/O 设计</h2><h3 id="Reactor-设计模式-响应器模式"><a href="#Reactor-设计模式-响应器模式" class="headerlink" title="Reactor 设计模式/响应器模式"></a>Reactor 设计模式/响应器模式</h3><p>同步 IO 操作。适用场景为瞬间大并发。</p>
+<p>与观察者模式的区别在于多个事件源的关联。</p>
+<p>减少等待。当遇到需要等待 IO 时，先释放资源，再通过事件驱动继续之前的处理。</p>
+<h3 id="Proactor-设计模式"><a href="#Proactor-设计模式" class="headerlink" title="Proactor 设计模式"></a>Proactor 设计模式</h3><h2 id="相关文档"><a href="#相关文档" class="headerlink" title="相关文档"></a>相关文档</h2><p><a href="https://www.jianshu.com/p/458e4b276607" target="_blank" rel="noopener">Reactor 反应堆设计模式</a></p>
+</div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'angrypowman';
+var disqus_identifier = '2021/03/19/DesignPattern/';
+var disqus_title = 'Golang Design Patterns';
+var disqus_url = 'http://mex7.github.io/2021/03/19/DesignPattern/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//angrypowman.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2021/03/21/Docker/" class="prev">PREV</a><a href="/2020/08/27/Golang%20Concurrent/" class="next">NEXT</a></div><div class="copyright"><p>© 2017 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"angrypowman",'auto');ga('send','pageview');</script></body></html>

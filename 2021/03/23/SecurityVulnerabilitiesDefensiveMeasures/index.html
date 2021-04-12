@@ -1,0 +1,65 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> SecurityVulnerabilitiesDefensiveMeasures · MEX7</title><meta name="description" content="SecurityVulnerabilitiesDefensiveMeasures - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">SecurityVulnerabilitiesDefensiveMeasures</h1><div class="post-info">Mar 23, 2021</div><div class="post-content"><h2 id="SQL注入攻击"><a href="#SQL注入攻击" class="headerlink" title="SQL注入攻击"></a>SQL注入攻击</h2><ul>
+<li>sql 转换，特殊字符转义，危险字符、关键词过滤</li>
+<li>输入字段类型限制、长度限制</li>
+<li>统一采用 utf8mb4 编码</li>
+<li>限制客户端对数据库的操作权限</li>
+</ul>
+<h2 id="XSS（Cross-Site-Scripting）跨站脚本攻击"><a href="#XSS（Cross-Site-Scripting）跨站脚本攻击" class="headerlink" title="XSS（Cross Site Scripting）跨站脚本攻击"></a>XSS（Cross Site Scripting）跨站脚本攻击</h2><p>本质是 html 注入</p>
+<ul>
+<li>字符过滤</li>
+<li>服务端进行数据内容校验</li>
+<li>白名单屏蔽恶意链接</li>
+<li>后端对页面输出进行编码转换</li>
+</ul>
+<h2 id="CSRF（Server-Side-Request-Forgery）跨站请求伪造攻击"><a href="#CSRF（Server-Side-Request-Forgery）跨站请求伪造攻击" class="headerlink" title="CSRF（Server-Side Request Forgery）跨站请求伪造攻击"></a>CSRF（Server-Side Request Forgery）跨站请求伪造攻击</h2><p>请求伪造</p>
+<ul>
+<li>服务端进行 Referer 验证</li>
+<li>具备过期时间的 token</li>
+<li>header 加入自定义属性校验，短时间或者单词请求有效</li>
+</ul>
+<h2 id="任意文件上传、下载"><a href="#任意文件上传、下载" class="headerlink" title="任意文件上传、下载"></a>任意文件上传、下载</h2><ul>
+<li>上传下载身份验证，用户只操作自有权限文件或文件类型</li>
+<li>验证文件类型、大小，后端进行文件类型校验、目录执行权限限制</li>
+<li>禁止回传绝对路径，禁止用户上传数据进行目录指定和文件名称定义</li>
+<li>限制目录权限，提供独立的读取接口</li>
+</ul>
+<h2 id="越权访问"><a href="#越权访问" class="headerlink" title="越权访问"></a>越权访问</h2><ul>
+<li>数据从当前登录态获取</li>
+</ul>
+<h2 id="未授权访问"><a href="#未授权访问" class="headerlink" title="未授权访问"></a>未授权访问</h2><ul>
+<li>api 接口签名</li>
+</ul>
+<h2 id="明文传输"><a href="#明文传输" class="headerlink" title="明文传输"></a>明文传输</h2><ul>
+<li>公网走 https</li>
+<li>敏感数据单独加密</li>
+<li>核心数据存储加密</li>
+</ul>
+<h2 id="敏感信息泄露"><a href="#敏感信息泄露" class="headerlink" title="敏感信息泄露"></a>敏感信息泄露</h2><ul>
+<li>接口返回数据</li>
+<li>注释</li>
+<li>程序后门</li>
+<li>报错提示</li>
+</ul>
+<h2 id="暴力破解"><a href="#暴力破解" class="headerlink" title="暴力破解"></a>暴力破解</h2><ul>
+<li>用户登录次数限制</li>
+<li>IP访问限制</li>
+<li>服务端校验</li>
+<li>API鉴权</li>
+</ul>
+<h2 id="XXE（XML-External-Entity-Injection）XML-外部实体注入攻击"><a href="#XXE（XML-External-Entity-Injection）XML-外部实体注入攻击" class="headerlink" title="XXE（XML External Entity Injection）XML 外部实体注入攻击"></a>XXE（XML External Entity Injection）XML 外部实体注入攻击</h2><ul>
+<li>对用户提交的 XML 数据进行关键词过滤</li>
+</ul>
+<h2 id="短信、邮件轰炸"><a href="#短信、邮件轰炸" class="headerlink" title="短信、邮件轰炸"></a>短信、邮件轰炸</h2><ul>
+<li>限制使用频率</li>
+<li>异步发送，单次发布记录持久化后进行重复校验</li>
+</ul>
+</div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'angrypowman';
+var disqus_identifier = '2021/03/23/SecurityVulnerabilitiesDefensiveMeasures/';
+var disqus_title = 'SecurityVulnerabilitiesDefensiveMeasures';
+var disqus_url = 'http://mex7.github.io/2021/03/23/SecurityVulnerabilitiesDefensiveMeasures/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//angrypowman.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2021/03/23/GoMock/" class="prev">PREV</a><a href="/2021/03/21/Docker/" class="next">NEXT</a></div><div class="copyright"><p>© 2017 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"angrypowman",'auto');ga('send','pageview');</script></body></html>
