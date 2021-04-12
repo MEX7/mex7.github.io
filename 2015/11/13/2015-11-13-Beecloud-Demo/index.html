@@ -1,0 +1,144 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 三方支付 BeeCloud · MEX7</title><meta name="description" content="三方支付 BeeCloud - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">三方支付 BeeCloud</h1><div class="post-info">Nov 13, 2015</div><div class="post-content"><h1 id="关于使用三方支付的简单工具类说明文档"><a href="#关于使用三方支付的简单工具类说明文档" class="headerlink" title="关于使用三方支付的简单工具类说明文档"></a>关于使用三方支付的简单工具类说明文档</h1><p><a href="https://beecloud.cn/" target="_blank" rel="noopener">beecloud官方网站</a></p>
+<p>直接使用支付宝或者微信也应该不是很困难，我感觉使用三方的优势在连调的地方，效率提升还是很多的。</p>
+<p>需要提醒的是三方支付并不能跳过你去微信、支付宝、银联申请和签约的过程。支付宝和微信大概2-3天就可以搞定，前提是有公司资质。</p>
+<h2 id="服务端的JAVA代码"><a href="#服务端的JAVA代码" class="headerlink" title="服务端的JAVA代码"></a>服务端的JAVA代码</h2><pre>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+<%@ page import="net.sf.json.JSONObject"%>
+<%@ page import="java.io.BufferedReader"%>
+<%@ page import="java.io.InputStream" %>
+<%@ page import="com.sun.org.apache.xpath.internal.operations.Bool"%>
+<%@ page import="java.io.UnsupportedEncodingException" %>
+<%@ page import="org.apache.commons.codec.digest.DigestUtils" %>
+<%@ page import="java.util.*"%>
+<%@ page import="cn.beecloud.*"%>
+<%@ page import="org.apache.log4j.*"%>
+<%@ page import="com.anjibei.app.framework.services.account.PayService"%>
+<%@ page import="com.anjibei.app.framework.uitls.JsonUtils"%>
+<%@ page import="wedev.db.data.account.Pay" %>
+<%
+    /* *
+     功能：BeeCloud服务器异步通知页面
+     //***********页面功能说明***********
+     创建该页面文件时，请留心该页面文件中无任何HTML代码及空格。
+     该页面不能在本机电脑测试，请到服务器上做测试。请确保外部可以访问该页面。
+     如果没有收到该页面返回的 success 信息，BeeCloud会在36小时内按一定的时间策略重发通知
+     //********************************
+     * */
+%>
+
+<%!
+    Logger log = Logger.getLogger(this.getClass());
+    boolean verify(String sign, String text, String key, String input_charset) {
+        text = text + key;
+        String mysign = DigestUtils.md5Hex(getContentBytes(text, input_charset));
+        log.info("mysign:" + mysign);
+
+        long timeDifference = System.currentTimeMillis() - Long.valueOf(key).longValue();
+        log.info("timeDifference:" +  timeDifference);
+        if (mysign.equals(sign) && timeDifference <= 300000) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    boolean verifySign(String sign, String timestamp) {
+        log.info("sign:"+ sign);
+        log.info("timestamp:" +timestamp);
+        return verify(sign, BCCache.getAppID() + BCCache.getAppSecret(),
+                timestamp, "UTF-8");
+    }
+
+    byte[] getContentBytes(String content, String charset) {
+        if (charset == null || "".equals(charset)) {
+            return content.getBytes();
+        }
+        try {
+            return content.getBytes(charset);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("MD5签名过程中出现错误,指定的编码集不对,您目前指定的编码集是:" + charset);
+        }
+    }
+%>
+<%
+    BeeCloud.registerApp("2ef9fb0c-3394-4459-9a62-d8230420e038", "f3f46298-d1f6-4e32-91fc-4ebb94dd797e");
+    StringBuffer json = new StringBuffer();
+    String line = null;
+
+    try {
+        BufferedReader reader = request.getReader();
+        while ((line = reader.readLine()) != null) {
+            json.append(line);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    JSONObject jsonObj = JSONObject.fromObject(json.toString());
+
+    String sign = jsonObj.getString("sign");
+    String timestamp = jsonObj.getString("timestamp");
+    String optional = jsonObj.getString("optional");
+    String type = jsonObj.getString("sub_channel_type");
+    String channelType = jsonObj.getString("channel_type");
+    String methodId = null;
+
+    boolean status = verifySign(sign, timestamp);
+    if (status) { //验证成功
+        out.println("success"); //请不要修改或删除
+        if(channelType=="WX"){
+            methodId = jsonObj.getString("openid");
+        } else if(channelType=="ALI"){
+            methodId = jsonObj.getString("buyer_email");
+        } else if(channelType=="UN"){
+            methodId = jsonObj.getString("traceNo");
+        }
+        // 解析 optionl 参数
+        try {
+            Pay payDate = (Pay)JsonUtils.getInstance().jsonStr2Object(optional, Pay.class);
+            PayService pay = new PayService();
+            // 对交易类型的判断
+            if (type == "full"){
+                if (pay.isOrderPay(jsonObj.getInt("transaction_fee"), payDate)){
+                    pay.changeOrderStatus(payDate, channelType, methodId);
+                }
+            } else if (type == "earnest"){
+                if (pay.isEarnestPay(jsonObj.getInt("transaction_fee"), payDate)){
+                    pay.changeEarnestStatus(payDate, channelType, methodId);
+                }
+            }
+        }catch (Exception e){
+        }finally {
+        }
+        // 此处需要验证购买的产品与订单金额是否匹配:
+        // 验证购买的产品与订单金额是否匹配的目的在于防止黑客反编译了iOS或者Android app的代码，
+        // 将本来比如100元的订单金额改成了1分钱，开发者应该识别这种情况，避免误以为用户已经足额支付。
+        // Webhook传入的消息里面应该以某种形式包含此次购买的商品信息，比如title或者optional里面的某个参数说明此次购买的产品是一部iPhone手机，
+        // 开发者需要在客户服务端去查询自己内部的数据库看看iPhone的金额是否与该Webhook的订单金额一致，仅有一致的情况下，才继续走正常的业务逻辑。
+        // 如果发现不一致的情况，排除程序bug外，需要去查明原因，防止不法分子对你的app进行二次打包，对你的客户的利益构成潜在威胁。
+        // 如果发现这样的情况，请及时与我们联系，我们会与客户一起与这些不法分子做斗争。而且即使有这样极端的情况发生， 
+        // 只要按照前述要求做了购买的产品与订单金额的匹配性验证，在你的后端服务器不被入侵的前提下，你就不会有任何经济损失。 
+        // 处理业务逻辑  
+    } else { //验证失败  
+        out.println("fail");  
+    }
+%>
+
+</pre>
+
+<p>这段代码只在完成支付之后，回调的时候发挥作用：</p>
+<blockquote>
+<p>就是在自己的系统中记录付款的数据，有时候一些小得项目可以不用这个，之后就当做完成了。</p>
+</blockquote>
+</div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'mex7';
+var disqus_identifier = '2015/11/13/2015-11-13-Beecloud-Demo/';
+var disqus_title = '三方支付 BeeCloud';
+var disqus_url = 'http://mex7.github.io/2015/11/13/2015-11-13-Beecloud-Demo/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//mex7.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2015/11/14/2015-11-14-Saturday/" class="prev">PREV</a><a href="/2015/09/25/2015-09-25-Python/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"MEX",'auto');ga('send','pageview');</script></body></html>

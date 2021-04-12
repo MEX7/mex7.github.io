@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> C# WEB Services · MEX7</title><meta name="description" content="C# WEB Services - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">C# WEB Services</h1><div class="post-info">Aug 13, 2014</div><div class="post-content"><h1 id="C-Web-Services"><a href="#C-Web-Services" class="headerlink" title="C# Web Services"></a>C# Web Services</h1><h2 id="DeBUG"><a href="#DeBUG" class="headerlink" title="DeBUG"></a>DeBUG</h2><blockquote>
+<p>C#构建Web Service，理论上现在应该使用微软大力推行的WCF，考虑到项目周期问题，还是使用相对简单地Web Service，下面主要是将一些实际应用中的问题，可能是比较特定化的问题。</p>
+</blockquote>
+<p>完成基础的东西之后就遇到问题，基础的东西网络教程很多，也就不多提了，问题就是不传参的时候能成功获取返回值，一旦有参数传入就报出错误，</p>
+<h3 id="数组的反序列化不支持类型"><a href="#数组的反序列化不支持类型" class="headerlink" title="数组的反序列化不支持类型"></a>数组的反序列化不支持类型</h3><pre>{"Message":"数组的反序列化不支持类型“
+System.Collections.Generic.IDictionary
+`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],
+[System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]”。",
+"StackTrace":" 在 
+System.Web.Script.Serialization.ObjectConverter.ConvertListToObject(IList list, Type type, JavaScriptSerializer serializer, Boolean throwOnError, IList& convertedList)\r\n 
+在 System.Web.Script.Serialization.ObjectConverter.ConvertObjectToTypeInternal(Object o, Type type, JavaScriptSerializer serializer, Boolean throwOnError, Object& convertedObject)\r\n 
+在 System.Web.Script.Serialization.ObjectConverter.ConvertObjectToTypeMain(Object o, Type type, JavaScriptSerializer serializer, Boolean throwOnError, Object& convertedObject)\r\n 
+在 System.Web.Script.Serialization.JavaScriptSerializer.Deserialize(JavaScriptSerializer serializer, String input, Type type, Int32 depthLimit)\r\n 
+在 System.Web.Script.Serialization.JavaScriptSerializer.Deserialize[T](String input)\r\n 
+在 System.Web.Script.Services.RestHandler.GetRawParamsFromPostRequest(HttpContext context, JavaScriptSerializer serializer)\r\n 
+在 System.Web.Script.Services.RestHandler.GetRawParams(WebServiceMethodData methodData, HttpContext context)\r\n 
+在 System.Web.Script.Services.RestHandler.ExecuteWebServiceCall(HttpContext context, WebServiceMethodData methodData)","ExceptionType":"System.InvalidOperationException"}
+</pre>
+
+<p>看错误分析，<code>数组的反序列化不支持类型</code>，在后来的测试中发现可能与</p>
+<pre>request.ContentType = "Content-Type:application/json"</pre>
+
+<p>有关，于是我使用下面这种默认值的方式</p>
+<pre>request.ContentType = "application/x-www-form-urlencoded"</pre>
+
+<p>之后仍然还在报错，这次是说缺少参数，但是明明已经给出了json格式的参数？so…</p>
+<pre>string paraUrlCoded = System.Web.HttpUtility.UrlEncode("paramaters");
+ paraUrlCoded += "=" + System.Web.HttpUtility.UrlEncode(jsonParas);
+</pre>
+
+<p>我加了个参数，<strong>paramaters</strong>就是Service中function的参数名。 然后就没问题了。</p>
+<hr>
+<h3 id="参数传递解析问题"><a href="#参数传递解析问题" class="headerlink" title="参数传递解析问题"></a>参数传递解析问题</h3><p>–参数传递过程中会有反斜杠解析错误,使用replace替换下就好了。–</p>
+<pre>paramaters = paramaters.Replace(@"\", @"");
+</pre>
+
+<blockquote>
+<p>这个是客户端返回两次json encode的原因，需要重新约定传值内容，才是上策（2015.11.13）</p>
+</blockquote>
+<h2 id="数据解析"><a href="#数据解析" class="headerlink" title="数据解析"></a>数据解析</h2><blockquote>
+<p>并不熟悉C#，下文应该有很多不足。这个标题好像有点奇怪，其实主要想说明的是List Object 和Object嵌套（嵌套这个词不知道准不准确）该怎样解析。<br> <code>背景</code>简单讲下为什么要做这个，使用C#来做底层WEB SERVICE，中间数据使用大家觉得理所应当的JSON。至于为什么不用现在微软推崇的WCF？在我目前浅层次的水平上无法驾驭好WCF让其发挥出比普通WEB SERVICE更好的效果，相比进程话的部署服务器端的部署更加简单方便（可能这个说法不准确，大神勿喷）。</p>
+</blockquote>
+</div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'mex7';
+var disqus_identifier = '2014/08/13/2014-08-13-C#-WebServices/';
+var disqus_title = 'C# WEB Services';
+var disqus_url = 'http://mex7.github.io/2014/08/13/2014-08-13-C#-WebServices/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//mex7.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2014/08/16/2019-06-10-Grafana/" class="prev">PREV</a><a href="/2014/08/07/2014-08-07-%E9%A1%B9%E7%9B%AE%E8%BF%9B%E7%A8%8B%E6%8E%A7%E5%88%B6/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"MEX",'auto');ga('send','pageview');</script></body></html>

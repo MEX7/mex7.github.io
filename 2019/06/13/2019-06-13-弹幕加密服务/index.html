@@ -1,0 +1,34 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 弹幕加密服务 · MEX7</title><meta name="description" content="弹幕加密服务 - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">弹幕加密服务</h1><div class="post-info">Jun 13, 2019</div><div class="post-content"><h1 id="弹幕加密服务上线"><a href="#弹幕加密服务上线" class="headerlink" title="弹幕加密服务上线"></a>弹幕加密服务上线</h1><h2 id="6月11日"><a href="#6月11日" class="headerlink" title="6月11日"></a>6月11日</h2><p>第一次发版，配合运维解决线上环境问题。</p>
+<h2 id="6月12日"><a href="#6月12日" class="headerlink" title="6月12日"></a>6月12日</h2><p>服务器扩容，新增2台机器。</p>
+<p>新增机器之后，开放 CPU 限制导致，由于 login 消息积压，导致 CPU 一直满载。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">    ncpu :&#x3D; runtime.NumCPU()</span><br><span class="line">    if ncpu &gt; 2 &#123;</span><br><span class="line">        runtime.GOMAXPROCS(int(ncpu) - 2)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>MQ 消费问题，如何能更自然的解决积压问题，还有积压告警</p>
+<p>问题：</p>
+<ul>
+<li>如果没有消费者，生产者持续生成，数据会存到硬盘，过期策略，等到消费者上线会产生积压，要是新增一个消费者，之前的数据怎么搞，那不是都有积压，哈？</li>
+</ul>
+<h2 id="6月13日"><a href="#6月13日" class="headerlink" title="6月13日"></a>6月13日</h2><p>四台机器消费能力正常，增加大数据提供的线上接口之后出现另外的问题，机器有16G的内存，基本一小时内打满。</p>
+<p><img src="https://i.loli.net/2019/06/13/5d023a992276275306.png" alt="代码.png"></p>
+<p>分析原因是当前版本 resty 的遗留问题，针对类似参数多变的 URL 会进行 Metric 监控采集，由于 QPS 晚高峰达到 5000+ 情况下，大数据接口产生数据延时以及报错，导致 timer 时延进而内存堆积。</p>
+<p><img src="https://i.loli.net/2019/06/13/5d023b3c5b3f671305.png" alt="内存.png"></p>
+<p>升级 resty 解决。</p>
+<p>增加自定义 Metric</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">func SetMetric(typeStr string) &#123;</span><br><span class="line">    EncryptImp.metric.Counter(typeStr, map[string]string&#123;</span><br><span class="line">        &quot;ctype&quot;: typeStr,</span><br><span class="line">    &#125;).Inc(1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>服务上线前对大数据的接口没有进行压测，线下没发现这个问题。</p>
+<p>调整之后目前线上服务稳定。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>MQ 消费服务上线注意积压问题，准备解压方案</li>
+<li>对于 QPS 较高的服务进行完整性压测</li>
+</ul>
+</div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'mex7';
+var disqus_identifier = '2019/06/13/2019-06-13-弹幕加密服务/';
+var disqus_title = '弹幕加密服务';
+var disqus_url = 'http://mex7.github.io/2019/06/13/2019-06-13-弹幕加密服务/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//mex7.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2019/07/17/2019-07-17-CGO-pb/" class="prev">PREV</a><a href="/2019/06/10/2019-06-10-%E6%B7%B7%E6%B2%8C%E5%B7%A5%E7%A8%8B/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"MEX",'auto');ga('send','pageview');</script></body></html>

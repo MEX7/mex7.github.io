@@ -1,0 +1,113 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Nginx 配置 · MEX7</title><meta name="description" content="Nginx 配置 - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">Nginx 配置</h1><div class="post-info">Aug 5, 2015</div><div class="post-content"><h1 id="最简化配置"><a href="#最简化配置" class="headerlink" title="最简化配置"></a>最简化配置</h1><pre>
+server {
+    listen 80;
+    server_name foo.com;
+
+    root /path;
+    index index.html index.htm index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+
+        include fastcgi.conf;
+        fastcgi_pass 127.0.0.1:9000;
+    }
+}
+</pre>
+
+<h1 id="常规配置"><a href="#常规配置" class="headerlink" title="常规配置"></a>常规配置</h1><pre>
+
+#user  nobody;
+worker_processes  1;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    server {
+        listen       80;
+        server_name  ovclouds.com;
+
+        #charset koi8-r;
+
+        #access_log  logs/host.access.log  main;
+
+        location / {
+            root   /opt/web;
+            index  index.html index.htm;
+        }
+        location ^~ /api/2.0/bp {
+            proxy_pass http://ovclouds.com:9002;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+        location ^~ /api/2.0/ll {
+            proxy_pass http://ovclouds.com:8889;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+    }
+}
+
+</pre>
+
+<h2 id="nginx重启"><a href="#nginx重启" class="headerlink" title="nginx重启"></a>nginx重启</h2><p><code>/usr/local/nginx/sbin/nginx -s reload</code></p>
+<h2 id="server配置"><a href="#server配置" class="headerlink" title="server配置"></a>server配置</h2><h3 id="访问地址通配符-通配符部分原文地址"><a href="#访问地址通配符-通配符部分原文地址" class="headerlink" title="访问地址通配符(通配符部分原文地址)"></a>访问地址通配符(<a href="http://blog.sina.com.cn/s/blog_704836f40100ya3h.html" target="_blank" rel="noopener">通配符部分原文地址</a>)</h3><pre>
+location / { } 
+location /images/ { } 
+location /blog/ { } 
+location /planet/ { } 
+location /planet/blog/ { }
+
+location ~ IndexPage.php$ { } 
+location ~ ^/BlogPlanet(/|/index.php)$ { }
+location ~* .(pl|cgi|perl|prl)$ { } 
+location ~* .(md|mdwn|txt|mkdn)$ { }
+location ^~ /images/IndexPage/ { } 
+location ^~ /blog/BlogPlanet/ { }
+
+location = / { }
+</pre>
+
+<p>第一组的5行例子，是逐字匹配。匹配请求的主机名以后的部分。假定有一个请求<a href="http://ducklington.org/" target="_blank" rel="noopener">http://ducklington.org/</a> ，假设server_name配置为ducklington.org，那么”location /“指令会捕捉这个请求。nginx总是使用最精确的匹配来处理请求。例如,一个<a href="http://ducklington.org/planet/blog/" target="_blank" rel="noopener">http://ducklington.org/planet/blog/</a> 的请求和一个 <a href="http://ducklington.org/planet/blog/about/" target="_blank" rel="noopener">http://ducklington.org/planet/blog/about/</a> 的请求，会被”location /planet/blog/“ 指令捕捉到，尽管”location /planet/“ 也能匹配这2个请求。</p>
+<p>当一个location 指令后边跟着一个”~”波浪线符号时，nginx会执行一个正则表达式匹配。这些匹配总是大小写敏感的。所以在第二组，第一行的示例中，包含IndexPage.php的请求会被捕捉，而包含indexpage.php的请求则不会。在第二行的示例中，所有包含/BlogPlanet/ 和/BlogPlanet/index.php的请求会被捕捉，而包含/BlogPlanet, /blogplanet/, /blogplanet/index.php的请求则不会。nginx使用Perl Compatible Regular Expressions (PCRE)正则。</p>
+<p>在location指令后便跟着一个”~*”波浪线和星号时，nginx只能给一个正则表达式匹配，但是会忽略大小写。在第三组第一行的示例中，所有后缀为.pl, .PL, .cgi, .CGI, .perl, .Perl, .prl, .PrL的请求都会被捕捉。</p>
+<p>第四组示例中的location 指令功能和第一组的相同，所不同的是，当location后边跟着”^<del>“的时候，它强制nginx停止搜索更多的匹配。在第四组的示例中，”^</del> /images/IndexPage/“ 和 “^~ /blog/BlogPlanet/“会强制nginx捕捉包含有对应表达式的请求，即便还有其他location指令也可以匹配这个请求。</p>
+<p>最后一组示例，”=”等号会精确匹配请求的路径，并且使nginx停止搜索其他更详尽的匹配。例如，<a href="http://ducklington.org/" target="_blank" rel="noopener">http://ducklington.org/</a> 会被捕捉到，但是 <a href="http://ducklington.org/index.html" target="_blank" rel="noopener">http://ducklington.org/index.html</a> 则不会被捕捉。使用精确匹配可以轻微加速请求，尤其是在某些请求特别受欢迎的时候。</p>
+</div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'mex7';
+var disqus_identifier = '2015/08/05/2015-08-05-Nginx/';
+var disqus_title = 'Nginx 配置';
+var disqus_url = 'http://mex7.github.io/2015/08/05/2015-08-05-Nginx/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//mex7.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2015/08/18/2015-08-18-Django/" class="prev">PREV</a><a href="/2015/06/05/2015-06-05-fork()/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"MEX",'auto');ga('send','pageview');</script></body></html>

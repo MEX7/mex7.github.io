@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> spring framework · MEX7</title><meta name="description" content="spring framework - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">spring framework</h1><div class="post-info">Nov 9, 2014</div><div class="post-content"><p>现在有两个问题比较难搞</p>
+<ol>
+<li>做一个类似新浪大屏幕的东西</li>
+<li>spring framework结合hibernate的时候缺少自动注入的东西</li>
+</ol>
+<h3 id="大屏幕"><a href="#大屏幕" class="headerlink" title="大屏幕"></a>大屏幕</h3><p>用php+Ajax，中间需要一个cpu sleep的时间，会不会导致信息丢失？HTML5的websocket也没用足够的时间能确保搞定，后天晚上就要用？如何破</p>
+<p><code>201411100104</code>下午破了下，算是解决了，不过有个很不好的习惯，就是懒，没有对每个项目配置vhost，本地带了文件夹路径，A服务器81端口没文件夹路径，A服务器8080端口又需要带路径，B服务器没路径，反正就是会出现各种问题，明天还是给本地配置一下vhost，方便开发，完全不能偷懒哎，总是要还回来的。</p>
+<p>最后用js的ajax扫描本地文件，做轮询，然后进行显示；同时用php监测数据库给本地文件不断写入新数据，然后就是这样了，是不是缓存的感觉，总感觉很挫，也就这样了，明天微调下，周二去现场咯。</p>
+<p>想了想，感觉快期末了，呵呵，好多作业没写…</p>
+<p>用什么这种方式一直会导致在同一时间发的消息会遗漏，而去其他平台的数据好像无法显示。所以最后增加了一个GET字段来进行判断。</p>
+<pre>
+  public function refresh()
+  {
+    $lastID;
+    $filename = dirname(__FILE__)."/data.txt";
+
+    if (isset($_GET['id'])) {
+      $lastID = $this->input->get('id', TRUE);
+    }else{
+      $file = file_get_contents($filename);
+      $fileResult = explode('|', $file);
+      //获取最后ID
+      $lastID = $fileResult['2'];
+    }
+    $lastID += 1;
+
+    $query = $this->post->getScrollMessage();
+    $res   = $query->row();
+    $nowID = $res->id;
+
+    if ($nowID >= $lastID) {
+      // TODO 执行获取写入操作
+      $query   = $this->post->getScrollMessageByID($lastID);
+
+      while ($query->row()==null) {
+        $lastID += 1;
+        $query   = $this->post->getScrollMessageByID($lastID);
+      }
+      $res = $query->row();
+      $content = $res->content.'|'.$res->nickname.'|'.$res->id;
+      // 执行写入操作
+
+      $fh = fopen($filename,"w");
+      fwrite($fh, $content);
+      fclose($fh);
+    }else{
+      // 不执行写入
+      $lastID -= 1;
+    }
+    $data['id'] = $lastID;
+    $this->load->view('refresh', $data);
+  }
+</pre>
+
+<p>将ID传入view界面，进行刷新，不得不说JS的刷新函数还真是很多啊。</p>
+<pre>
+<script language="JavaScript">
+function myrefresh()
+{
+  var id = document.getElementById("reID").innerText;
+  location.href = "http://***/***/refresh"+ '?id=' + id;
+}
+setTimeout('myrefresh()',300); //指定1秒刷新一次
+</script>
+</pre>
+
+<p>反正最后就这样了，明天早上去调试节目效果。</p>
+<h3 id="自动注入bean"><a href="#自动注入bean" class="headerlink" title="自动注入bean"></a>自动注入bean</h3><p>不知道我这个说法准不准确啊，毕竟初学java才一个月，对反射还有注入的这些东西都不是很了解，说法也可能有些欠妥，反正就是现在每次都需要读取xml配置文件，实例化配置文件中的类。</p>
+<blockquote>
+<p>是因为没用spring mvc ？？？？</p>
+</blockquote>
+<p>后来下午尝试用了加入spring mvc还是失败了，关键还是不了解java配置文件的机制，需要大神指点下，相比会很大的提升啊，如果这个问题弄清楚了的话。</p>
+<p>最后，只用了spring framework和hibernate，至于注入的问题，就写了一个单例，其实到最后我还没能完全理解这个单例是干嘛的。</p>
+</div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'mex7';
+var disqus_identifier = '2014/11/09/2014-11-09-spring-framework/';
+var disqus_title = 'spring framework';
+var disqus_url = 'http://mex7.github.io/2014/11/09/2014-11-09-spring-framework/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//mex7.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2014/11/22/2014-11-22-Hibernate/" class="prev">PREV</a><a href="/2014/11/07/2014-11-07-Jetty/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"MEX",'auto');ga('send','pageview');</script></body></html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 用Post方式传输数据的细节探讨 · MEX7</title><meta name="description" content="用Post方式传输数据的细节探讨 - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">用Post方式传输数据的细节探讨</h1><div class="post-info">Dec 24, 2014</div><div class="post-content"><h1 id="API-调用过程中的数据传输"><a href="#API-调用过程中的数据传输" class="headerlink" title="API 调用过程中的数据传输"></a>API 调用过程中的数据传输</h1><h2 id="使用post方式传输数据，数据传输格式"><a href="#使用post方式传输数据，数据传输格式" class="headerlink" title="使用post方式传输数据，数据传输格式"></a>使用post方式传输数据，数据传输格式</h2><blockquote>
+<p>key=value</p>
+</blockquote>
+<h2 id="直接获取输入流"><a href="#直接获取输入流" class="headerlink" title="直接获取输入流"></a>直接获取输入流</h2><p>用这个函数直接读取所有post进入的数据，可以理解为key=value这个整体全部被接收，需要考虑到乱码和长度的问题，这个还没测试过，也不能说什么，我是比较推荐使用第二种方式。</p>
+<pre>
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+public class StreamResolve
+
+    final static int BUFFER_SIZE = 4096;
+    /**
+     * 将InputStream转换成byte数组
+     * @param in InputStream
+     * @return byte[]
+     * @throws IOException
+     */
+    public static byte[] InputStreamTOByte(InputStream in) throws IOException{
+
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[] data = new byte[BUFFER_SIZE];
+        int count = -1;
+        while((count = in.read(data,0,BUFFER_SIZE)) != -1)
+            outStream.write(data, 0, count);
+
+        data = null;
+        return outStream.toByteArray();
+    }
+}
+</pre>
+
+<p>调用</p>
+<pre>
+StreamResolve streamResolve = new StreamResolve();
+String parameters = new String(streamResolve.InputStreamTOByte(req.getInputStream()));
+</pre>
+
+<h2 id="使用自带函数-输入key值获取value"><a href="#使用自带函数-输入key值获取value" class="headerlink" title="使用自带函数,输入key值获取value"></a>使用自带函数,输入key值获取value</h2><pre>
+req.getParameter("data")
+</pre>
+
+<p>这个系统已经封装好了，对应编码和获取长度的优化明显更加良好。</p>
+<p>hum…</p>
+<p>为什么有这两种方式的纠结</p>
+<ul>
+<li>对post传输方式内容结构不清楚（其实现在想想post数据格式和get数据的格式完全一样，就是走的方式不同）</li>
+<li>QA使用curl的文本直接测试方式（没有使用传统的post方式）</li>
+</ul>
+<h1 id="2015年12月11日-更新"><a href="#2015年12月11日-更新" class="headerlink" title="2015年12月11日 更新"></a>2015年12月11日 更新</h1><h2 id="修正对post传输数据的格式"><a href="#修正对post传输数据的格式" class="headerlink" title="修正对post传输数据的格式"></a>修正对post传输数据的格式</h2><p>这个也不能说是post的传输数据格式，这个只能理解成你提交的一种数据规则，<br><img src="http://7xo7nh.com1.z0.glb.clouddn.com/QQ20151211-1@2x.png" alt="两种方式后端接收到数据内容"></p>
+<blockquote>
+<p>一般情况你请求别人的api肯定是不带data这个前置key的，所以我觉得在获取别人数据的时候就是用接收数据流的方式吧。</p>
+</blockquote>
+</div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'mex7';
+var disqus_identifier = '2014/12/24/2014-12-24-服务器间数据传输/';
+var disqus_title = '用Post方式传输数据的细节探讨';
+var disqus_url = 'http://mex7.github.io/2014/12/24/2014-12-24-服务器间数据传输/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//mex7.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2014/12/24/2014-12-24-%E7%9F%AD%E6%9A%82%E7%9A%84iOS%E5%AD%A6%E4%B9%A0/" class="prev">PREV</a><a href="/2014/11/22/2014-11-22-Hibernate/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"MEX",'auto');ga('send','pageview');</script></body></html>

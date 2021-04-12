@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Django Basic Instructions · MEX7</title><meta name="description" content="Django Basic Instructions - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">Django Basic Instructions</h1><div class="post-info">May 10, 2016</div><div class="post-content"><h1 id="Django1-8-CentOS7-Nginx-uwsgi"><a href="#Django1-8-CentOS7-Nginx-uwsgi" class="headerlink" title="Django1.8 CentOS7 Nginx uwsgi"></a>Django1.8 CentOS7 Nginx uwsgi</h1><p>The deployment set for a long time, at first i met the environment problem which is my code based on Python3.4. Python2.7 and python3.4 conflict. So, i try to use <code>virtualenv</code> to make it success, and i have to do many works again.</p>
+<h2 id="Django"><a href="#Django" class="headerlink" title="Django"></a>Django</h2><p>I used it in august 2015, later i found <code>Flask</code> with <code>Gunicorn</code> is better way to finish a small project.</p>
+<h3 id="Install-django"><a href="#Install-django" class="headerlink" title="Install django"></a>Install django</h3><p>This is needless to say, it is ok to use <code>pip</code>.<br>Recommend a source image: <code>https://pypi.doubanio.com/simple/</code></p>
+<h3 id="Start-django"><a href="#Start-django" class="headerlink" title="Start django"></a>Start django</h3><p>start project</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">django-admin.py startproject xxc</span><br></pre></td></tr></table></figure>
+
+<p>start app</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python manage.py startapp xxc_student</span><br></pre></td></tr></table></figure>
+
+<p>if you want to user <code>pymysql</code>, you should change _<em>init.py_</em> as follow:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import pymysql</span><br><span class="line"></span><br><span class="line">pymysql.install_as_MySQLdb()</span><br></pre></td></tr></table></figure>
+
+<p>after all, synchronous database</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 manage.py syncdb</span><br></pre></td></tr></table></figure>
+
+<h2 id="uwsgi"><a href="#uwsgi" class="headerlink" title="uwsgi"></a>uwsgi</h2><h3 id="Install-uwsgi"><a href="#Install-uwsgi" class="headerlink" title="Install uwsgi"></a>Install uwsgi</h3><p>These were some error you may encounter: </p>
+<ul>
+<li>uwsgi: option ‘–http’ is ambiguous</li>
+</ul>
+<blockquote>
+<p>The problems associated with the environment of python，it is recommented to use <code>pip install uwsgi</code> to install uwsgi</p>
+</blockquote>
+<ul>
+<li>ImportError: No module named ‘wsgi’</li>
+</ul>
+<blockquote>
+<p>Wsgi configuration file with the manage.py in the same directory，there are many kinds of format wsgi configuration file，such as<code>.wsgi</code> and <code>.py</code>, you can use both of them in the same way.</p>
+</blockquote>
+<h3 id="Start-uwsgi"><a href="#Start-uwsgi" class="headerlink" title="Start uwsgi"></a>Start uwsgi</h3><p>start command, this command is a test way to run the Django.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uwsgi --http-socket :8000 --chdir &#x2F;opt&#x2F;AnJiBei_Python_Project&#x2F;anjibei&#x2F; --module django_wsgi</span><br></pre></td></tr></table></figure>
+
+<p>You can make uwsgi become a deamon with log.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uwsgi --http-socket :8000 --chdir &#x2F;opt&#x2F;AnJiBei_Python_Project&#x2F;anjibei&#x2F; --module django_wsgi --daemonize &#x2F;opt&#x2F;AnJiBei_Python_Project&#x2F;anjibei&#x2F;log&#x2F;uwsgi.log</span><br></pre></td></tr></table></figure>
+
+<p>Also important is that <code>django_wsgi</code> is the configuration file which should be in the same directory with <code>manage.py</code>.Don’t write an absolute path, otherwise, may lead to the <code>import error</code>.</p>
+<p>These were some error you may encounter: </p>
+<ul>
+<li>Static resource access failure</li>
+</ul>
+<blockquote>
+<p>Run <code>python manage.py collectstatic</code>，and static files will be copied to the <code>STATIC_ROOT</code> specified static folder.</p>
+</blockquote>
+<p>This command feels a bit strange, my static files distribution under different startapp, now, all of them… hum… be synchronized.The location of the static files were affected by the position where you execute the <code>uwsgi</code> command. So, you can find the static files were in the same directory with <code>manage.py</code>. <del>Here is a picture of original, but… you know…</del> </p>
+<h3 id="Stop-uwsgi"><a href="#Stop-uwsgi" class="headerlink" title="Stop uwsgi"></a>Stop uwsgi</h3><p>Just we specify th 8000 port, so we can use it to find the process no.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -apn | grep 8000</span><br></pre></td></tr></table></figure>
+
+<p>Or, you can user the process name directly.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -apn | grep uwsgi</span><br></pre></td></tr></table></figure>
+
+<p>Later, use <code>kill</code> to stop the uwsgi deamon.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kill -9 3532</span><br></pre></td></tr></table></figure>
+
+<h3 id="Git-pull"><a href="#Git-pull" class="headerlink" title="Git pull"></a>Git pull</h3><p>You have to restart the uwsgi to make you code to take effect.</p>
+</div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'mex7';
+var disqus_identifier = '2016/05/10/2016-05-10-Django/';
+var disqus_title = 'Django Basic Instructions';
+var disqus_url = 'http://mex7.github.io/2016/05/10/2016-05-10-Django/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//mex7.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2016/05/12/2016-09-23-patterns/" class="prev">PREV</a><a href="/2016/03/17/2016-03-17-%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"MEX",'auto');ga('send','pageview');</script></body></html>

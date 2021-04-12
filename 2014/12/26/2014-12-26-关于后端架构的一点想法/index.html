@@ -1,0 +1,30 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 关于后端架构的一点想法 · MEX7</title><meta name="description" content="关于后端架构的一点想法 - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">关于后端架构的一点想法</h1><div class="post-info">Dec 26, 2014</div><div class="post-content"><p><strong>以下内容是我作为一个java初学者的角度来谈到，肯定有很多低级错误…</strong></p>
+<h3 id="现在服务器爆炸（额…爆炸就是说tomcat不工作了）有两种情况："><a href="#现在服务器爆炸（额…爆炸就是说tomcat不工作了）有两种情况：" class="headerlink" title="现在服务器爆炸（额…爆炸就是说tomcat不工作了）有两种情况："></a>现在服务器爆炸（额…爆炸就是说tomcat不工作了）有两种情况：</h3><ol>
+<li><p>在单条select耗时过长时会自动终止，但是说到这个也是有点奇怪，之前在window server下部署tomcat的时候，一旦发生这种情况会导致服务器整体当机，并在多次重启之后会导致tomcat彻底无法启动。结合目前在centos下的实际测试来说，不会发生这种情况了，只会是这个接口掉不出数据，并不会影响其他接口，不过这个应该和我使用了try catch有关。</p>
+<pre><code>*   对单个select耗时过长的问题，真心不能经常用视图，正常的select在**0.1-0.3s**对视图的多条件获取耗时长达**5s**左右。所以，不要把程序的逻辑强制使用视图进行完成。之前说过一句话**把服务器压力分给数据库**现在觉得这个思路完全不正确，必须要提高单次数据库连接获取的速度，多表连接查询的耗时和程序执行的耗时不在一个数量级，之前以为距离排序用数据库排序更快，现在想想，我用PHP对一万条数据排序，也就是毫秒级别（记错勿喷，反正我想说的就是很快的意思），所以逻辑一定要做到服务器上，中间件上，这里就体现出了所谓的设计模式和算法，以及各种算法和设计模式带来的执行速度差异。</code></pre></li>
+</ol>
+<blockquote>
+<p>所以，不要把程序的逻辑强制使用视图进行完成。</p>
+</blockquote>
+<ol>
+<li><p>在运行一段时间之后停止工作，猜测这个原因是hibernate的问题</p>
+<pre><code>*   tomcat配置不够（虽然可能性不大，但是也修改了）</code></pre><ul>
+<li>hibernateTemplate自动关闭失败，还有连接池的问题，我还是不相信自动配置的东西…</li>
+</ul>
+</li>
+</ol>
+<h3 id="给我个盾牌，要防爆啊啊啊，爆炸一次简直是在滴血"><a href="#给我个盾牌，要防爆啊啊啊，爆炸一次简直是在滴血" class="headerlink" title="给我个盾牌，要防爆啊啊啊，爆炸一次简直是在滴血"></a>给我个盾牌，要防爆啊啊啊，爆炸一次简直是在滴血</h3><ol>
+<li>优化每个接口的执行速度，把对视图操作的逻辑都抽出来，尽量不适用视图。</li>
+<li>理解修改配置，连接池，反正今天都加上去了，到底会不会爆炸呢。</li>
+</ol>
+<p>我传2张图，第二个仅仅对2张表做了视图连接，耗时提示100倍，不开玩笑的<strong>0.352s</strong>和<strong>25.74s</strong></p>
+</div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'mex7';
+var disqus_identifier = '2014/12/26/2014-12-26-关于后端架构的一点想法/';
+var disqus_title = '关于后端架构的一点想法';
+var disqus_url = 'http://mex7.github.io/2014/12/26/2014-12-26-关于后端架构的一点想法/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//mex7.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2015/03/06/2015-03-06-PHP-userful-function/" class="prev">PREV</a><a href="/2014/12/24/2014-12-24-%E7%9F%AD%E6%9A%82%E7%9A%84iOS%E5%AD%A6%E4%B9%A0/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"MEX",'auto');ga('send','pageview');</script></body></html>

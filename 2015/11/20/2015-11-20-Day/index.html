@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 2015-11-20-Day · MEX7</title><meta name="description" content="2015-11-20-Day - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">2015-11-20-Day</h1><div class="post-info">Nov 20, 2015</div><div class="post-content"><h2 id="增强MAC本地字典"><a href="#增强MAC本地字典" class="headerlink" title="增强MAC本地字典"></a>增强MAC本地字典</h2><p>推荐一个资料库<br><a href="http://abloz.com/huzheng/stardict-dic/zh_CN/" target="_blank" rel="noopener">http://abloz.com/huzheng/stardict-dic/zh_CN/</a></p>
+<h3 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h3><ol>
+<li><p>下载词库</p>
+<blockquote>
+<p>这个就用上面的链接，选择几个推荐的进行下载。</p>
+</blockquote>
+</li>
+<li><p>下载转换软件</p>
+<blockquote>
+<p><a href="http://pan.baidu.com/s/1kTGVGv9" target="_blank" rel="noopener">http://pan.baidu.com/s/1kTGVGv9</a> 这是压缩包，解压后直接使用，打开后把词库拖进去就可以了</p>
+</blockquote>
+</li>
+</ol>
+<p>ps: 有时候词库比较大，转换时间可能会比较长，等会就好了</p>
+<h2 id="推荐"><a href="#推荐" class="headerlink" title="推荐"></a>推荐</h2><p>朋友给我推荐了个电视剧：北平无战事  </p>
+<p>最近要上映<strong>「火星救援」</strong>还是蛮期待的</p>
+<h2 id="PHP赋值"><a href="#PHP赋值" class="headerlink" title="PHP赋值"></a>PHP赋值</h2><pre>
+
+$a = [1, 2];
+list($a, $b) = $a;
+
+// PHP5: $a = 1, $b = 2  
+// PHP7: $a = 1, $b = null + "Undefined index 1"  
+
+</pre>
+
+<p>这是因为在以前的赋值过程中 $b 先得到 2，然后 $a 的值才变成 1，但是现在 $a 先变成了 1，不再是数组，所以 $b 就成了 null。</p>
+<h2 id="多列索引"><a href="#多列索引" class="headerlink" title="多列索引"></a>多列索引</h2><p>创建多列索引的意义就是为了‘减少io操作’</p>
+<p>“一个顶三个”。建了一个(a,b,c)的复合索引，那么实际等于建了(a),(a,b),(a,b,c)三个索引，因为每多一个索引，都会增加写操作的开销和磁盘空间的开销。对于大量数据的表，这可是不小的开销！</p>
+<p>覆盖索引。同样的有复合索引（a,b,c），如果有如下的sql: select a,b,c from table where a=1 and b = 1。那么MySQL可以直接通过遍历索引取得数据，而无需回表，这减少了很多的随机io操作。减少io操作，特别的随机io其实是dba主要的优化策略。</p>
+<h2 id="RFC"><a href="#RFC" class="headerlink" title="RFC"></a>RFC</h2><p>征求修正意见书（英语：Request For Comments，缩写为RFC</p>
+<h2 id="redis"><a href="#redis" class="headerlink" title="redis"></a>redis</h2><p>著作权归作者所有。<br>商业转载请联系作者获得授权，非商业转载请注明出处。<br>作者：韦易笑<br>链接：<a href="http://www.zhihu.com/question/19660689/answer/44680339" target="_blank" rel="noopener">http://www.zhihu.com/question/19660689/answer/44680339</a><br>来源：知乎</p>
+<p>单独使用Redis的话，它是成当不起数据库的任务，比如你每日活跃用户是1万人，但是你那台redis里面已经积累了50万人了（这个比例很正常），那么每次redis启动，就需要把50万load内存，每次redis备份，又需要把50万dump到磁盘，这靠谱么？======================补充1：可以用SSDB代替（redis协议+leveldb存储），生产环节若干 PCU百万级项目用过。补充2：看了下陌陌争霸的方案，旁路存储，如果觉得时间充足，也可以仿照实现。补充3：把冷数据落地到mongo，热数据在用redis存储。</p>
+<p>著作权归作者所有。<br>商业转载请联系作者获得授权，非商业转载请注明出处。<br>作者：shafreeck<br>链接：<a href="http://www.zhihu.com/question/19660689/answer/12932192" target="_blank" rel="noopener">http://www.zhihu.com/question/19660689/answer/12932192</a><br>来源：知乎</p>
+<p>redis 是内存数据库， 内存写满后，数据不会存储到硬盘上（VM 不稳定，diskstore未启用），如果你内存足够大，则可以用redis作为数据库。</p>
+<h2 id="现代计算机系统"><a href="#现代计算机系统" class="headerlink" title="现代计算机系统"></a>现代计算机系统</h2><p>现代计算机系统可在同一段时间内以进程的形式将多个程序加载到存储器中，并借由时间共享（或称时分复用），以在一个处理器上表现出同时（平行性）运行的感觉</p>
+<p>阻塞和非阻塞指的是执行一个操作是等操作结束再返回，还是马上返回。</p>
+<h2 id="kingshard"><a href="#kingshard" class="headerlink" title="kingshard"></a>kingshard</h2><p>kingshard是一个由Go开发高性能MySQL Proxy项目，kingshard在满足基本的读写分离的功能上，致力于简化MySQL分库分表操作；能够让DBA通过kingshard轻松平滑地实现MySQL数据库扩容。 kingshard的性能大约是直连MySQL性能的80%以上。</p>
+<p><a href="https://github.com/flike/kingshard/blob/master/README_ZH.md" target="_blank" rel="noopener">https://github.com/flike/kingshard/blob/master/README_ZH.md</a></p>
+<p><a href="http://blog.51yip.com/" target="_blank" rel="noopener">http://blog.51yip.com/</a></p>
+<h2 id="python-model-中自定义-tablename"><a href="#python-model-中自定义-tablename" class="headerlink" title="python model 中自定义 tablename"></a>python model 中自定义 tablename</h2><p>db_table</p>
+<p>Options.db_table<br>The name of the database table to use for the model:</p>
+<pre>
+
+db_table = 'music_album'
+
+</pre>
+
+<h2 id="文字"><a href="#文字" class="headerlink" title="文字"></a>文字</h2><p>人会长大三次。<br>第一次是在发现自己不是世界中心的时候。<br>第二次是在发现即使再怎么努力，终究还是有些事令人无能为力的时候。<br>第三次是在，明知道有些事可能会无能为力，但还是会尽力争取的时候。</p>
+</div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'mex7';
+var disqus_identifier = '2015/11/20/2015-11-20-Day/';
+var disqus_title = '2015-11-20-Day';
+var disqus_url = 'http://mex7.github.io/2015/11/20/2015-11-20-Day/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//mex7.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2015/11/23/2015-11-23-HTTP-%E4%BB%A3%E7%90%86/" class="prev">PREV</a><a href="/2015/11/14/2015-11-14-Saturday/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"MEX",'auto');ga('send','pageview');</script></body></html>

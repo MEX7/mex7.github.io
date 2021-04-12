@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> C 程序里面的 fork() · MEX7</title><meta name="description" content="C 程序里面的 fork() - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">C 程序里面的 fork()</h1><div class="post-info">Jun 5, 2015</div><div class="post-content"><blockquote>
+<p>这篇文章写在我带实验课的时候，遇到有些问题我解释不出来，又不能乱讲…   所以</p>
+</blockquote>
+<p>fork()的作用是让当前进程分叉，简单讲就是拷贝当前进程，所以在eg 1中 <code>step2 after fork()</code> 会被打印两次<br>eg 1</p>
+<pre>
+int fork_3(){
+    printf("it's the main process step 1!!\n\n");
+
+    fork();
+
+    printf("step2 after fork() !!\n\n");
+
+    int i; scanf("%d",&i);   //prevent exiting
+    return 0;
+}
+</pre>
+
+<p>昨天看别人做实验，代码基本和eg 2相似，但是里面有sleep()，打印的结果是依次交替打印parent和child。</p>
+<p>注释掉sleep之后会优先输出parent，然后是child，觉得可能是不是fork()的返回值是什么，但是并不是这样，你要知道这两个进程是同时进行的，所以这个if else就显得不那么重要了。<br>eg 2</p>
+<pre>
+int fork_1(){
+    int childpid;
+    int i;
+
+    if (fork() == 0){
+        //child process
+        for (i=1; i<=8; i++){
+            printf("This is child process\n");
+        }
+    }else{
+        //parent process
+        for(i=1; i<=8; i++){
+            printf("This is parent process\n");
+        }
+    }
+
+    printf("step2 after fork() !!\n\n");
+}
+</pre>
+
+<p>那么问题来了，fork()是怎么返回的，为什么有的时候是0有的时候大于0？</p>
+<blockquote>
+<p>fork()函数调用一次，返回两次，因为有2个进程，分别在2个进程中返回</p>
+</blockquote>
+<p>参考：<br><a href="http://www.cnblogs.com/Anker/archive/2012/12/16/2820526.html" target="_blank" rel="noopener"><strong>http://www.cnblogs.com/Anker/archive/2012/12/16/2820526.html</strong></a></p>
+</div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'mex7';
+var disqus_identifier = '2015/06/05/2015-06-05-fork()/';
+var disqus_title = 'C 程序里面的 fork()';
+var disqus_url = 'http://mex7.github.io/2015/06/05/2015-06-05-fork()/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//mex7.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2015/08/05/2015-08-05-Nginx/" class="prev">PREV</a><a href="/2015/05/14/2015-05-14-AngularJS/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"MEX",'auto');ga('send','pageview');</script></body></html>

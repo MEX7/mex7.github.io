@@ -1,0 +1,69 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Prometheus · MEX7</title><meta name="description" content="Prometheus - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">Prometheus</h1><div class="post-info">Nov 29, 2018</div><div class="post-content"><p>时序数据库，开源的监控报警系统。</p>
+<ul>
+<li><p>自定义多维度的数据模型</p>
+</li>
+<li><p>非常高效的存储 平均一个采样数据占 ~3.5 bytes左右，320万的时间序列，每30秒采样，保持60天，消耗磁盘大概228G。</p>
+</li>
+</ul>
+<p>等等</p>
+<p>相对于Graphite这种产品，还是有不少优点的。最让我觉得不错的是非常优秀的写性能和读取性能，它数据结构实现和OpenTSDB是有相似之处，有兴趣可以看看这个文档。解密OpenTSDB的表存储优</p>
+<p>Prometheus 的系统架构</p>
+<p>它的服务过程是这样的 Prometheus daemon 负责定时去目标上抓取 metrics(指标) 数据，每个抓取目标需要暴露一个http服务的接口给它定时抓取。<br>Prometheus支持通过配置文件、文本文件、zookeeper、Consul、DNS SRV lookup等方式指定抓取目标。<br>Alertmanager 是独立于Prometheus的一个组件，可以支持Prometheus的查询语句，提供十分灵活的报警方式。<br>Prometheus支持很多方式的图表可视化，例如十分精美的Grafana，自带的Promdash，以及自身提供的模版引擎等等，还提供HTTP API的查询方式，自定义所需要的输出。<br>PushGateway这个组件是支持Client主动推送 metrics 到PushGateway，而Prometheus只是定时去Gateway上抓取数据。</p>
+<p>如果有使用过statsd的用户，则会觉得这十分相似，只是statsd是直接发送给服务器端，而Prometheus主要还是靠进程主动去抓取。</p>
+<p>Prometheus 的数据模型<br>Prometheus 从根本上所有的存储都是按时间序列去实现的，相同的 metrics(指标名称) 和 label(一个或多个标签) 组成一条时间序列，不同的label表示不同的时间序列。为了支持一些查询，有时还会临时产生一些时间序列存储。<br>metrics name &amp; label 指标名称和标签</p>
+<p>每条时间序列是由唯一的 指标名称 和 一组 标签 （key=value）的形式组成。<br>指标名称 一般是给监测对像起一名字，例如 http_requests_total 这样，它有一些命名规则，可以包字母数字_之类的的。<br>通常是以应用名称开头_监测对像_数值类型_单位这样。<br>例如：</p>
+<ul>
+<li>push_total</li>
+<li>userlogin_mysql_duration_seconds</li>
+<li>app_memory_usage_bytes<br>标签 就是对一条时间序列不同维度的识别了，例如 一个http请求用的是POST还是GET，它的endpoint是什么，这时候就要用标签去标记了。<br>最终形成的标识便是这样了</li>
+</ul>
+<p>http_requests_total{method=”POST”,endpoint=”/api/tracks”}</p>
+<p>记住，针对http_requests_total这个metrics name 无论是增加标签还是删除标签都会形成一条新的时间序列。<br>查询语句就可以跟据上面标签的组合来查询聚合结果了。<br>如果以传统数据库的理解来看这条语句，则可以考虑 http_requests_total是表名，标签是字段，而timestamp是主键，还有一个float64字段是值了。（Prometheus里面所有值都是按float64存储）</p>
+<p>Prometheus 的四种数据类型<br>Counter</p>
+<ul>
+<li><p>Counter 用于累计值，例如 记录 请求次数、任务完成数、错误发生次数。</p>
+</li>
+<li><p>一直增加，不会减少。</p>
+</li>
+<li><p>重启进程后，会被重置。</p>
+</li>
+</ul>
+<p>例如：http_response_total{method=”GET”,endpoint=”/api/tracks”} 100<br>10秒后抓取 http_response_total{method=”GET”,endpoint=”/api/tracks”} 100</p>
+<p>Gauge</p>
+<ul>
+<li><p>Gauge 常规数值，例如 温度变化、内存使用变化。</p>
+</li>
+<li><p>可变大，可变小。</p>
+</li>
+<li><p>重启进程后，会被重置</p>
+</li>
+</ul>
+<p>例如： memory_usage_bytes{host=”master-01”} 100 &lt; 抓取值<br>memory_usage_bytes{host=”master-01”} 30<br>memory_usage_bytes{host=”master-01”} 50<br>memory_usage_bytes{host=”master-01”} 80 &lt; 抓取值</p>
+<p>Histogram</p>
+<ul>
+<li>Histogram 可以理解为柱状图的意思，常用于跟踪事件发生的规模，例如：请求耗时、响应大小。它特别之处是可以对记录的内容进行分组，提供 count 和 sum 全部值的功能。<br>例如：{小于10=5次，小于20=1次，小于30=2次}，count=7次，sum=7次的求和值</li>
+</ul>
+<p>Summary</p>
+<ul>
+<li><p>Summary和Histogram十分相似，常用于跟踪事件发生的规模，例如：请求耗时、响应大小。同样提供 count 和 sum 全部值的功能。</p>
+</li>
+<li><p>例如：count=7次，sum=7次的值求值</p>
+</li>
+<li><p>它提供一个quantiles的功能，可以按%比划分跟踪的结果。例如：quantile取值0.95，表示取采样值里面的95%数据。</p>
+</li>
+</ul>
+<p>下一章说说Prometheus安装过程。</p>
+<h2 id="数据格式化"><a href="#数据格式化" class="headerlink" title="数据格式化"></a>数据格式化</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; ParsePrometheus 只返回瞬时值 不可用在 query range 这种场景下</span><br><span class="line">func ParsePrometheus(val pm.Value, labelName string) ([]ItemFloat, error) &#123;</span><br><span class="line">    var res []ItemFloat</span><br><span class="line">    &#x2F;&#x2F;var labelIns pm.LabelName &#x3D; &quot;exported_instance&quot;</span><br><span class="line">    var labelJob &#x3D; pm.LabelName(labelName)</span><br><span class="line">    &#x2F;&#x2F;var appName pm.LabelName &#x3D; &quot;app_name&quot;</span><br><span class="line">    vec, ok :&#x3D; val.(pm.Vector)</span><br><span class="line">    if !ok &#123;</span><br><span class="line">        return res, errors.New(&quot;parse data error&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">    if vec.Len() &#x3D;&#x3D; 0 &#123;</span><br><span class="line">        return res, errors.New(&quot;data not found&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">    for _, v :&#x3D; range vec &#123;</span><br><span class="line">        row :&#x3D; ItemFloat&#123;&#125;</span><br><span class="line">        row.Name &#x3D; string(v.Metric[labelJob])</span><br><span class="line">        if row.Name &#x3D;&#x3D; &quot;&quot; &#123;</span><br><span class="line">            continue</span><br><span class="line">        &#125;</span><br><span class="line">        t, _ :&#x3D; strconv.ParseFloat(v.Value.String(), 64)</span><br><span class="line">        row.Value &#x3D; util.Float64Round(t, 2)</span><br><span class="line">        res &#x3D; append(res, row)</span><br><span class="line">    &#125;</span><br><span class="line">    return res, nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><h3 id="TOP"><a href="#TOP" class="headerlink" title="TOP"></a>TOP</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">topk(3, sum(rate(instance_cpu_time_ns[5m])) by (app, proc))</span><br></pre></td></tr></table></figure>
+
+<h3 id="Redis-Peak"><a href="#Redis-Peak" class="headerlink" title="Redis Peak"></a>Redis Peak</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">topk(5, sum(max_over_time(redis_connected_clients&#123;&#125;[24h])) by (addr))</span><br><span class="line">topk(5, sum(max_over_time(redis_memory_used_bytes&#123;&#125;[24h])) by (addr))&#x2F;8388608</span><br><span class="line">topk(5, sum(rate(redis_net_output_bytes_total&#123;&#125;[24h])) by (addr))&#x2F;1048576</span><br><span class="line">topk(5, sum(rate(redis_net_input_bytes_total&#123;&#125;[24h])) by (addr))&#x2F;1048576</span><br><span class="line">topk(5, sum(irate(redis_keyspace_hits_total&#123;&#125;[24h])) by (addr))</span><br><span class="line">topk(5, sum(irate(redis_keyspace_misses_total&#123;&#125;[24h])) by (addr))</span><br><span class="line">topk(5, sum(rate(redis_commands_processed_total&#123;&#125;[24h])) by (addr))</span><br></pre></td></tr></table></figure></div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'mex7';
+var disqus_identifier = '2018/11/29/2018-11-29-Prometheus/';
+var disqus_title = 'Prometheus';
+var disqus_url = 'http://mex7.github.io/2018/11/29/2018-11-29-Prometheus/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//mex7.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2019/04/04/2019-04-04-CGO%E7%BB%8F%E9%AA%8C/" class="prev">PREV</a><a href="/2018/11/29/2018-11-29-MongoDB/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"MEX",'auto');ga('send','pageview');</script></body></html>

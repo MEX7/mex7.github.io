@@ -1,0 +1,34 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 日常打卡 CentOS install Tomcat · MEX7</title><meta name="description" content="日常打卡 CentOS install Tomcat - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">日常打卡 CentOS install Tomcat</h1><div class="post-info">Nov 3, 2014</div><div class="post-content"><p>搞定了centos上面的tomcat，在网上看博客各种说下载源码cp后怎样怎样的，当时网速太卡，我就试了下</p>
+<blockquote>
+<p>yum install tomcat</p>
+</blockquote>
+<p>呵呵…居然就这么安装好了，只能说明那些博客太古老了，现在呃yum库都自带了，还是tomcat7</p>
+<p>试了下我的想法，把java二进制文件传到bitbucked上，然后再pull到centos上，用着这半手动的方式管理发布。<strong>是不是应该再买一个阿里云大家git服务器自己部署hook，这样省事多了</strong>，确实是这样的，突然想到bitbucked会不会被墙了，被墙的话，公司财产就都GG了，看来等到2.0版发布之后就应该开始准备这个了，<strong>好像是之前确实有点太迷信bitbucked</strong>。</p>
+<p>安装好tomcat之后就配置路径，再/etc/tomcat/server.xml里面，就不多说了，看例子好像可以设置多域名访问。</p>
+<p>简单的在bash里面写了一个alias，用起来肯定比以前用windwos服务器要舒服的多。</p>
+<blockquote>
+<p>vim ~/.bash_profile</p>
+</blockquote>
+<p>最后，还遇到了一个问题，在git push的时候提示</p>
+<pre>
+POST git-receive-pack (chunked)
+</pre>
+
+<p>看字面意思就是网络阻塞<br>解决方法就是在<strong>.git/config</strong>文件中加入</p>
+<pre>
+[http] 
+    postBuffer = 524288000 
+</pre>
+
+<p>就可以搞定了</p>
+<p>最后就是这样，目前的打算就是放弃FTP服务器，使用又拍云进行图像存储。</p>
+</div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'mex7';
+var disqus_identifier = '2014/11/03/2014-11-03-Tomcat/';
+var disqus_title = '日常打卡 CentOS install Tomcat';
+var disqus_url = 'http://mex7.github.io/2014/11/03/2014-11-03-Tomcat/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//mex7.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2014/11/07/2014-11-07-Jetty/" class="prev">PREV</a><a href="/2014/10/07/2014-10-04-Python-%E7%88%AC%E8%99%AB/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"MEX",'auto');ga('send','pageview');</script></body></html>

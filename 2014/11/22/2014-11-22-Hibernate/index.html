@@ -1,0 +1,69 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Maven 配置 · MEX7</title><meta name="description" content="Maven 配置 - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">Maven 配置</h1><div class="post-info">Nov 22, 2014</div><div class="post-content"><blockquote>
+<p><code>whereis java</code> <code>which java</code></p>
+</blockquote>
+<p>发布jetty的时候要跑一个启动脚本，然后报错了，找不到java路径，然后就找到了这两条神奇的命令。</p>
+<blockquote>
+<p>ulimit -n 10000</p>
+</blockquote>
+<p>将每个进程能打开的文件数量调整为10000</p>
+<p>maven编译的时候没产生tar.gz，是因为没有在pom里写入构建的配置</p>
+<pre>
+
+ <build>
+        <finalName>test</finalName>
+
+        <resources>
+            <resource>
+                <directory>src/test/resource</directory>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <encoding>utf-8</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <finalName>${project.artifactId}</finalName>
+                    <descriptors>
+                        <descriptor>
+                            src/main/assembly/distribution.xml
+                        </descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</pre>
+
+<p>Hibernate做数据库映射（不知道这个说法是否恰当），在数据流中存在三种状态，刚刚new出来的临时状态，进入session缓存并在数据库中记录的持久化状态，脱离session缓存的对象进入游离态。 扯这三种状态也就是我想获取save操作时候的自增id，在持久化之后，数据库写入了并同时返回给session对象一个完整的数据对象。</p>
+<pre>@GeneratedValue(strategy= GenerationType.AUTO)
+</pre></div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'mex7';
+var disqus_identifier = '2014/11/22/2014-11-22-Hibernate/';
+var disqus_title = 'Maven 配置';
+var disqus_url = 'http://mex7.github.io/2014/11/22/2014-11-22-Hibernate/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//mex7.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2014/12/24/2014-12-24-%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%97%B4%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93/" class="prev">PREV</a><a href="/2014/11/09/2014-11-09-spring-framework/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"MEX",'auto');ga('send','pageview');</script></body></html>
