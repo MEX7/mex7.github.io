@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://mex7.github.io/2015/08/05/2015-08-05-Nginx/</loc>
+    
+    <lastmod>2021-04-12T11:15:48.277Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://mex7.github.io/2020/05/23/Docker/</loc>
     
     <lastmod>2021-04-12T11:04:23.645Z</lastmod>
@@ -425,13 +432,6 @@
     <loc>http://mex7.github.io/2015/08/18/2015-08-18-Django/</loc>
     
     <lastmod>2021-04-12T11:03:24.262Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://mex7.github.io/2015/08/05/2015-08-05-Nginx/</loc>
-    
-    <lastmod>2021-04-12T11:03:24.255Z</lastmod>
     
   </url>
   
