@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> TCP/IP 协议栈简述 · MEX7</title><meta name="description" content="TCP/IP 协议栈简述 - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">TCP/IP 协议栈简述</h1><div class="post-info">May 10, 2021</div><div class="post-content"><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>想要把一台主机的数据传输到另外一台主机上，需要借助TCP/IP协议的帮忙，在传输过程中所有的内容都转换成0和1的电信号，通过物理介质包括不限于：光纤、双绞线和无线电波，传输到对方的电脑。</p>
+<p>四层架构的U型结构</p>
+<p><img src="https://files.catbox.moe/aa6wrk.png" alt="四层架构的U型结构"></p>
+<p>一个HTTP请求的完整流程，通过应用层、传输层、网络层、链路层，依次对请求进行包装并增加对应的首部数据，形成以太网数据包。</p>
+<blockquote>
+<p>好比送快递，配送车就是物理介质，配送站就是网关，快递员就是路由器，收货地址就是IP，联系方式就是MAC地址</p>
+</blockquote>
+<h2 id="链路层"><a href="#链路层" class="headerlink" title="链路层"></a>链路层</h2><blockquote>
+<p>对电信号进行分组，产生数据帧，以广播的形式通过物理介质发送给目标方。</p>
+</blockquote>
+<p>已字节为单位为0和1类型的数据进行分组，按照分组顺序发送，一组信号为一个数据包即为一帧，这个规则是以太网协议。</p>
+<p>首部，14个字节：目标MAC地址、源MAC地址和类型。</p>
+<p>数据，46到1500字节：数据部分。</p>
+<p>尾部，4个字节：校验数据是否有损坏。</p>
+<p>数据包从一个网卡传输到另外一个网卡，网卡地址就是MAC地址（十六进制、6个字节、前三个字节是厂商编号，后三个字节是网卡流水号），具有全球唯一性，采用广播形式传递数据。</p>
+<h2 id="网络层"><a href="#网络层" class="headerlink" title="网络层"></a>网络层</h2><blockquote>
+<p>定义网络地址，区分网段，子网内MAC寻址，对于不同子网的数据包进行路由。 </p>
+</blockquote>
+<h3 id="IP协议"><a href="#IP协议" class="headerlink" title="IP协议"></a>IP协议</h3><p>区分两台主机是否属于一个网络，网络地址+主机地址，通过子网掩码按为进行与运算得到网络地址。</p>
+<h3 id="ARP协议"><a href="#ARP协议" class="headerlink" title="ARP协议"></a>ARP协议</h3><p>地址解析协议，生成以太数据包对子网进行广播，找到目标机，并在本地进行缓存。</p>
+<h3 id="路由协议。"><a href="#路由协议。" class="headerlink" title="路由协议。"></a>路由协议。</h3><p>不同子网间的目标机寻址，通过网关进行数据包转发，</p>
+<h3 id="IP数据包"><a href="#IP数据包" class="headerlink" title="IP数据包"></a>IP数据包</h3><p>首部，20个字节：目标IP和源IP地址</p>
+<p>数据部分，65515字节</p>
+<h2 id="传输层"><a href="#传输层" class="headerlink" title="传输层"></a>传输层</h2><blockquote>
+<p>定义端口，标识应用程序，实现端到端的数据传输，利用TCP协议保证数据传输的安全性。</p>
+</blockquote>
+<h3 id="UDP协议"><a href="#UDP协议" class="headerlink" title="UDP协议"></a>UDP协议</h3><p>首部，8个字节</p>
+<p>数据部分，65527字节</p>
+<p>没有确认机制</p>
+<h3 id="TCP协议"><a href="#TCP协议" class="headerlink" title="TCP协议"></a>TCP协议</h3><p>经过三次握手的可靠连接，理论上TCP数据包没有长度限制，但是受限于IP数据包长度，</p>
+<h2 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h2><p>利用以上三层传输过来的数据是字节流，应用程序定义了各种协议保证数据的规范性，例如HTTP、FTP、SMTP等协议。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>链路层：对0和1进行分组，定义数据帧</li>
+<li>网络层：定义IP，寻址</li>
+<li>传输层：定义端口，找到目标程序</li>
+<li>应用层：定义数据格式，目标程序解读数据</li>
+</ul>
+</div></article></div><div id="disqus_thread"></div></div><script>var disqus_shortname = 'mex7';
+var disqus_identifier = '2021/05/10/计算机基础/TCPIP/';
+var disqus_title = 'TCP/IP 协议栈简述';
+var disqus_url = 'http://mex7.github.io/2021/05/10/计算机基础/TCPIP/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//mex7.disqus.com/count.js" async></script></main><footer class="footer-container"><div class="paginator"><a href="/2021/04/12/CGO/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="http://mex7.github.io">mex7</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/AngryPowman/hexo-theme-prontera" target="_blank">hexo-theme-prontera</a>.</p></div></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"MEX",'auto');ga('send','pageview');</script></body></html>

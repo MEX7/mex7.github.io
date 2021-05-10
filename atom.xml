@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://mex7.github.io/"/>
-  <updated>2021-04-12T02:34:11.523Z</updated>
+  <updated>2021-05-10T11:56:13.674Z</updated>
   <id>http://mex7.github.io/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>TCP/IP 协议栈简述</title>
+    <link href="http://mex7.github.io/2021/05/10/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/TCPIP/"/>
+    <id>http://mex7.github.io/2021/05/10/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/TCPIP/</id>
+    <published>2021-05-09T16:09:36.000Z</published>
+    <updated>2021-05-10T11:56:13.674Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>想要把一台主机的数据传输到另外一台主机上，需要借助TCP/IP协议的帮忙，在传输过程中所有的内容都转换成0和1的电信号，通过物理介质包括不限于：光纤、双绞线和无线电波，传输到对方的电脑。</p><p>四层架构的U型结构</p><p><img src="https://files.catbox.moe/aa6wrk.png" alt="四层架构的U型结构"></p><p>一个HTTP请求的完整流程，通过应用层、传输层、网络层、链路层，依次对请求进行包装并增加对应的首部数据，形成以太网数据包。</p><blockquote><p>好比送快递，配送车就是物理介质，配送站就是网关，快递员就是路由器，收货地址就是IP，联系方式就是MAC地址</p></blockquote><h2 id="链路层"><a href="#链路层" class="headerlink" title="链路层"></a>链路层</h2><blockquote><p>对电信号进行分组，产生数据帧，以广播的形式通过物理介质发送给目标方。</p></blockquote><p>已字节为单位为0和1类型的数据进行分组，按照分组顺序发送，一组信号为一个数据包即为一帧，这个规则是以太网协议。</p><p>首部，14个字节：目标MAC地址、源MAC地址和类型。</p><p>数据，46到1500字节：数据部分。</p><p>尾部，4个字节：校验数据是否有损坏。</p><p>数据包从一个网卡传输到另外一个网卡，网卡地址就是MAC地址（十六进制、6个字节、前三个字节是厂商编号，后三个字节是网卡流水号），具有全球唯一性，采用广播形式传递数据。</p><h2 id="网络层"><a href="#网络层" class="headerlink" title="网络层"></a>网络层</h2><blockquote><p>定义网络地址，区分网段，子网内MAC寻址，对于不同子网的数据包进行路由。 </p></blockquote><h3 id="IP协议"><a href="#IP协议" class="headerlink" title="IP协议"></a>IP协议</h3><p>区分两台主机是否属于一个网络，网络地址+主机地址，通过子网掩码按为进行与运算得到网络地址。</p><h3 id="ARP协议"><a href="#ARP协议" class="headerlink" title="ARP协议"></a>ARP协议</h3><p>地址解析协议，生成以太数据包对子网进行广播，找到目标机，并在本地进行缓存。</p><h3 id="路由协议。"><a href="#路由协议。" class="headerlink" title="路由协议。"></a>路由协议。</h3><p>不同子网间的目标机寻址，通过网关进行数据包转发，</p><h3 id="IP数据包"><a href="#IP数据包" class="headerlink" title="IP数据包"></a>IP数据包</h3><p>首部，20个字节：目标IP和源IP地址</p><p>数据部分，65515字节</p><h2 id="传输层"><a href="#传输层" class="headerlink" title="传输层"></a>传输层</h2><blockquote><p>定义端口，标识应用程序，实现端到端的数据传输，利用TCP协议保证数据传输的安全性。</p></blockquote><h3 id="UDP协议"><a href="#UDP协议" class="headerlink" title="UDP协议"></a>UDP协议</h3><p>首部，8个字节</p><p>数据部分，65527字节</p><p>没有确认机制</p><h3 id="TCP协议"><a href="#TCP协议" class="headerlink" title="TCP协议"></a>TCP协议</h3><p>经过三次握手的可靠连接，理论上TCP数据包没有长度限制，但是受限于IP数据包长度，</p><h2 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h2><p>利用以上三层传输过来的数据是字节流，应用程序定义了各种协议保证数据的规范性，例如HTTP、FTP、SMTP等协议。</p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul><li>链路层：对0和1进行分组，定义数据帧</li><li>网络层：定义IP，寻址</li><li>传输层：定义端口，找到目标程序</li><li>应用层：定义数据格式，目标程序解读数据</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h2&gt;&lt;p&gt;想要把一台主机的数据传输到另外一台主机上，需要借助TCP/IP协议的帮忙，在传输过程中所有的内容都转换成0和1的电信号，通过物理介质包括不限
+      
+    
+    </summary>
+    
+    
+    
+  </entry>
   
   <entry>
     <title>CGO</title>
@@ -49,36 +71,6 @@
     <updated>2021-04-12T02:25:24.199Z</updated>
     
     <summary type="html">
-    
-    </summary>
-    
-    
-    
-  </entry>
-  
-  <entry>
-    <title>DouYu</title>
-    <link href="http://mex7.github.io/2021/04/06/Life/"/>
-    <id>http://mex7.github.io/2021/04/06/Life/</id>
-    <published>2021-04-05T16:09:36.000Z</published>
-    <updated>2021-04-12T02:35:30.068Z</updated>
-    
-    <content type="html"><![CDATA[<p>2017年3月进入斗鱼，开始学习go语言，并进行</p><ul><li>斗鱼文档系统</li><li>监控系统</li><li>微服务管理系统开发</li><li>链路中心</li><li>推流QoS监控</li><li>直播列表排序</li><li></li></ul><p>2018年</p><ul><li>识别服务调度平台</li><li>微服务用户中心</li><li>微服务监控中心</li><li>自建CDN调度系统</li><li>斗鱼 开发平台</li></ul><p>2019年</p><ul><li>识别架构设计</li><li>识别架构优化</li><li></li></ul><p>2020年</p><ul><li>斗鱼应用容器化推动</li><li>斗鱼微服务管理平台</li><li>算法自动化套件研发</li><li>华为SaaS平台接入</li></ul>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;2017年3月进入斗鱼，开始学习go语言，并进行&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;斗鱼文档系统&lt;/li&gt;
-&lt;li&gt;监控系统&lt;/li&gt;
-&lt;li&gt;微服务管理系统开发&lt;/li&gt;
-&lt;li&gt;链路中心&lt;/li&gt;
-&lt;li&gt;推流QoS监控&lt;/li&gt;
-&lt;li&gt;直播列表排序&lt;/li&gt;
-&lt;li&gt;&lt;/l
-      
     
     </summary>
     
@@ -211,17 +203,18 @@
     <link href="http://mex7.github.io/2021/03/23/SecurityVulnerabilitiesDefensiveMeasures/"/>
     <id>http://mex7.github.io/2021/03/23/SecurityVulnerabilitiesDefensiveMeasures/</id>
     <published>2021-03-23T03:06:26.000Z</published>
-    <updated>2021-03-23T06:40:29.299Z</updated>
+    <updated>2021-05-10T01:59:36.639Z</updated>
     
-    <content type="html"><![CDATA[<h2 id="SQL注入攻击"><a href="#SQL注入攻击" class="headerlink" title="SQL注入攻击"></a>SQL注入攻击</h2><ul><li>sql 转换，特殊字符转义，危险字符、关键词过滤</li><li>输入字段类型限制、长度限制</li><li>统一采用 utf8mb4 编码</li><li>限制客户端对数据库的操作权限</li></ul><h2 id="XSS（Cross-Site-Scripting）跨站脚本攻击"><a href="#XSS（Cross-Site-Scripting）跨站脚本攻击" class="headerlink" title="XSS（Cross Site Scripting）跨站脚本攻击"></a>XSS（Cross Site Scripting）跨站脚本攻击</h2><p>本质是 html 注入</p><ul><li>字符过滤</li><li>服务端进行数据内容校验</li><li>白名单屏蔽恶意链接</li><li>后端对页面输出进行编码转换</li></ul><h2 id="CSRF（Server-Side-Request-Forgery）跨站请求伪造攻击"><a href="#CSRF（Server-Side-Request-Forgery）跨站请求伪造攻击" class="headerlink" title="CSRF（Server-Side Request Forgery）跨站请求伪造攻击"></a>CSRF（Server-Side Request Forgery）跨站请求伪造攻击</h2><p>请求伪造</p><ul><li>服务端进行 Referer 验证</li><li>具备过期时间的 token</li><li>header 加入自定义属性校验，短时间或者单词请求有效</li></ul><h2 id="任意文件上传、下载"><a href="#任意文件上传、下载" class="headerlink" title="任意文件上传、下载"></a>任意文件上传、下载</h2><ul><li>上传下载身份验证，用户只操作自有权限文件或文件类型</li><li>验证文件类型、大小，后端进行文件类型校验、目录执行权限限制</li><li>禁止回传绝对路径，禁止用户上传数据进行目录指定和文件名称定义</li><li>限制目录权限，提供独立的读取接口</li></ul><h2 id="越权访问"><a href="#越权访问" class="headerlink" title="越权访问"></a>越权访问</h2><ul><li>数据从当前登录态获取</li></ul><h2 id="未授权访问"><a href="#未授权访问" class="headerlink" title="未授权访问"></a>未授权访问</h2><ul><li>api 接口签名</li></ul><h2 id="明文传输"><a href="#明文传输" class="headerlink" title="明文传输"></a>明文传输</h2><ul><li>公网走 https</li><li>敏感数据单独加密</li><li>核心数据存储加密</li></ul><h2 id="敏感信息泄露"><a href="#敏感信息泄露" class="headerlink" title="敏感信息泄露"></a>敏感信息泄露</h2><ul><li>接口返回数据</li><li>注释</li><li>程序后门</li><li>报错提示</li></ul><h2 id="暴力破解"><a href="#暴力破解" class="headerlink" title="暴力破解"></a>暴力破解</h2><ul><li>用户登录次数限制</li><li>IP访问限制</li><li>服务端校验</li><li>API鉴权</li></ul><h2 id="XXE（XML-External-Entity-Injection）XML-外部实体注入攻击"><a href="#XXE（XML-External-Entity-Injection）XML-外部实体注入攻击" class="headerlink" title="XXE（XML External Entity Injection）XML 外部实体注入攻击"></a>XXE（XML External Entity Injection）XML 外部实体注入攻击</h2><ul><li>对用户提交的 XML 数据进行关键词过滤</li></ul><h2 id="短信、邮件轰炸"><a href="#短信、邮件轰炸" class="headerlink" title="短信、邮件轰炸"></a>短信、邮件轰炸</h2><ul><li>限制使用频率</li><li>异步发送，单次发布记录持久化后进行重复校验</li></ul>]]></content>
+    <content type="html"><![CDATA[<h2 id="越权漏洞"><a href="#越权漏洞" class="headerlink" title="越权漏洞"></a>越权漏洞</h2><ul><li>垂直越权，访问高级别数据</li><li>水平越权，访问同级别其他用户数据</li><li>未授权访问，未做权限校验</li></ul><h2 id="逻辑漏洞"><a href="#逻辑漏洞" class="headerlink" title="逻辑漏洞"></a>逻辑漏洞</h2><ul><li>登录体系<ul><li>暴力破解</li><li>cookie安全</li><li>验证码测试</li><li>登录验证绕过</li><li>任意注册</li></ul></li><li>业务一致性安全</li></ul><h2 id="条件竞争漏洞"><a href="#条件竞争漏洞" class="headerlink" title="条件竞争漏洞"></a>条件竞争漏洞</h2><p>多线程同时请求产生的漏洞</p><h2 id="SQL注入攻击"><a href="#SQL注入攻击" class="headerlink" title="SQL注入攻击"></a>SQL注入攻击</h2><p>插入 sleep</p><p>不要用拼接的方式执行sql</p><ul><li>sql 转换，特殊字符转义，危险字符、关键词过滤</li><li>输入字段类型限制、长度限制</li><li>统一采用 utf8mb4 编码</li><li>限制客户端对数据库的操作权限</li></ul><p>RCE漏洞，远程执行命令和程序</p><p>XXE 执行 XML SYSTEM 将机器上的数据提取到本地</p><p>解析XML时禁用实体解析</p><p>默认情况下</p><h2 id="XSS（Cross-Site-Scripting）跨站脚本攻击"><a href="#XSS（Cross-Site-Scripting）跨站脚本攻击" class="headerlink" title="XSS（Cross Site Scripting）跨站脚本攻击"></a>XSS（Cross Site Scripting）跨站脚本攻击</h2><p>本质是 html 注入</p><ul><li>字符过滤</li><li>服务端进行数据内容校验</li><li>白名单屏蔽恶意链接</li><li>后端对页面输出进行编码转换</li></ul><h2 id="CSRF（Server-Side-Request-Forgery）跨站请求伪造攻击"><a href="#CSRF（Server-Side-Request-Forgery）跨站请求伪造攻击" class="headerlink" title="CSRF（Server-Side Request Forgery）跨站请求伪造攻击"></a>CSRF（Server-Side Request Forgery）跨站请求伪造攻击</h2><p>请求伪造</p><ul><li>服务端进行 Referer 验证</li><li>具备过期时间的 token</li><li>header 加入自定义属性校验，短时间或者单词请求有效</li></ul><h2 id="任意文件上传、下载"><a href="#任意文件上传、下载" class="headerlink" title="任意文件上传、下载"></a>任意文件上传、下载</h2><ul><li>上传下载身份验证，用户只操作自有权限文件或文件类型</li><li>验证文件类型、大小，后端进行文件类型校验、目录执行权限限制</li><li>禁止回传绝对路径，禁止用户上传数据进行目录指定和文件名称定义</li><li>限制目录权限，提供独立的读取接口</li></ul><h2 id="越权访问"><a href="#越权访问" class="headerlink" title="越权访问"></a>越权访问</h2><ul><li>数据从当前登录态获取</li></ul><h2 id="未授权访问"><a href="#未授权访问" class="headerlink" title="未授权访问"></a>未授权访问</h2><ul><li>api 接口签名</li></ul><h2 id="明文传输"><a href="#明文传输" class="headerlink" title="明文传输"></a>明文传输</h2><ul><li>公网走 https</li><li>敏感数据单独加密</li><li>核心数据存储加密</li></ul><h2 id="敏感信息泄露"><a href="#敏感信息泄露" class="headerlink" title="敏感信息泄露"></a>敏感信息泄露</h2><ul><li>接口返回数据</li><li>注释</li><li>程序后门</li><li>报错提示</li></ul><h2 id="暴力破解"><a href="#暴力破解" class="headerlink" title="暴力破解"></a>暴力破解</h2><ul><li>用户登录次数限制</li><li>IP访问限制</li><li>服务端校验</li><li>API鉴权</li></ul><h2 id="XXE（XML-External-Entity-Injection）XML-外部实体注入攻击"><a href="#XXE（XML-External-Entity-Injection）XML-外部实体注入攻击" class="headerlink" title="XXE（XML External Entity Injection）XML 外部实体注入攻击"></a>XXE（XML External Entity Injection）XML 外部实体注入攻击</h2><ul><li>对用户提交的 XML 数据进行关键词过滤</li></ul><h2 id="短信、邮件轰炸"><a href="#短信、邮件轰炸" class="headerlink" title="短信、邮件轰炸"></a>短信、邮件轰炸</h2><ul><li>限制使用频率</li><li>异步发送，单次发布记录持久化后进行重复校验</li></ul>]]></content>
     
     <summary type="html">
     
       
       
-        &lt;h2 id=&quot;SQL注入攻击&quot;&gt;&lt;a href=&quot;#SQL注入攻击&quot; class=&quot;headerlink&quot; title=&quot;SQL注入攻击&quot;&gt;&lt;/a&gt;SQL注入攻击&lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;sql 转换，特殊字符转义，危险字符、关键词过滤&lt;/li&gt;
-&lt;li&gt;输入字段类型限制、长
+        &lt;h2 id=&quot;越权漏洞&quot;&gt;&lt;a href=&quot;#越权漏洞&quot; class=&quot;headerlink&quot; title=&quot;越权漏洞&quot;&gt;&lt;/a&gt;越权漏洞&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;垂直越权，访问高级别数据&lt;/li&gt;
+&lt;li&gt;水平越权，访问同级别其他用户数据&lt;/li&gt;
+&lt;li&gt;未授权访问，未做
       
     
     </summary>

@@ -1,10 +1,33 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> SecurityVulnerabilitiesDefensiveMeasures · MEX7</title><meta name="description" content="SecurityVulnerabilitiesDefensiveMeasures - mex7"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/prontera.css"><link rel="search" type="application/opensearchdescription+xml" href="http://mex7.github.io/atom.xml" title="MEX7"><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="MEX7" type="application/atom+xml">
-</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">SecurityVulnerabilitiesDefensiveMeasures</h1><div class="post-info">Mar 23, 2021</div><div class="post-content"><h2 id="SQL注入攻击"><a href="#SQL注入攻击" class="headerlink" title="SQL注入攻击"></a>SQL注入攻击</h2><ul>
+</head><body><header class="feature-header"><nav class="component-nav"><ul><div class="logo-container"><a href="/"><h2 class="title">MEX7</h2></a></div><a href="/" target="_self" class="li component-nav-item"><p>INDEX</p></a><a href="/archives" target="_self" class="li component-nav-item"><p>ARCHIVES</p></a><ul class="shortcut-icons"><a href="https://github.com/AngryPowman" target="_blank"><img src="/images/github.svg" class="icon"></a><a href="/atom.xml" target="_blank"><img src="/images/rss.svg" class="icon"></a></ul></ul></nav></header><main class="container"><div id="post-container"><div class="post"><article class="post-block"><h1 class="post-title">SecurityVulnerabilitiesDefensiveMeasures</h1><div class="post-info">Mar 23, 2021</div><div class="post-content"><h2 id="越权漏洞"><a href="#越权漏洞" class="headerlink" title="越权漏洞"></a>越权漏洞</h2><ul>
+<li>垂直越权，访问高级别数据</li>
+<li>水平越权，访问同级别其他用户数据</li>
+<li>未授权访问，未做权限校验</li>
+</ul>
+<h2 id="逻辑漏洞"><a href="#逻辑漏洞" class="headerlink" title="逻辑漏洞"></a>逻辑漏洞</h2><ul>
+<li>登录体系<ul>
+<li>暴力破解</li>
+<li>cookie安全</li>
+<li>验证码测试</li>
+<li>登录验证绕过</li>
+<li>任意注册</li>
+</ul>
+</li>
+<li>业务一致性安全</li>
+</ul>
+<h2 id="条件竞争漏洞"><a href="#条件竞争漏洞" class="headerlink" title="条件竞争漏洞"></a>条件竞争漏洞</h2><p>多线程同时请求产生的漏洞</p>
+<h2 id="SQL注入攻击"><a href="#SQL注入攻击" class="headerlink" title="SQL注入攻击"></a>SQL注入攻击</h2><p>插入 sleep</p>
+<p>不要用拼接的方式执行sql</p>
+<ul>
 <li>sql 转换，特殊字符转义，危险字符、关键词过滤</li>
 <li>输入字段类型限制、长度限制</li>
 <li>统一采用 utf8mb4 编码</li>
 <li>限制客户端对数据库的操作权限</li>
 </ul>
+<p>RCE漏洞，远程执行命令和程序</p>
+<p>XXE 执行 XML SYSTEM 将机器上的数据提取到本地</p>
+<p>解析XML时禁用实体解析</p>
+<p>默认情况下</p>
 <h2 id="XSS（Cross-Site-Scripting）跨站脚本攻击"><a href="#XSS（Cross-Site-Scripting）跨站脚本攻击" class="headerlink" title="XSS（Cross Site Scripting）跨站脚本攻击"></a>XSS（Cross Site Scripting）跨站脚本攻击</h2><p>本质是 html 注入</p>
 <ul>
 <li>字符过滤</li>
